@@ -26,9 +26,7 @@ class Config(BaseSettings):
 
     name: str = Field("muster", title="Name of application")
 
-    path_prefix: str = Field(
-        "/muster", title="URL prefix for application"
-    )
+    path_prefix: str = Field("/muster", title="URL prefix for application")
 
     slack_webhook: SecretStr | None = Field(
         None,
