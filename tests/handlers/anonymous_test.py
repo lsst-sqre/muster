@@ -1,7 +1,5 @@
 """Tests for the anonymous ingress routes."""
 
-from __future__ import annotations
-
 import pytest
 from httpx import AsyncClient
 

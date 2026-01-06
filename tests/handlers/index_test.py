@@ -1,7 +1,5 @@
 """Tests for the top-level route."""
 
-from __future__ import annotations
-
 import pytest
 from httpx import AsyncClient
 
