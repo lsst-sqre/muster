@@ -19,6 +19,7 @@ from safir.middleware.x_forwarded import XForwardedMiddleware
 from safir.slack.webhook import SlackRouteErrorHandler
 
 from .config import config
+from .exceptions import MusterError, muster_error_handler
 from .handlers.external import external_router
 from .handlers.internal import internal_router
 
@@ -60,6 +61,9 @@ app.include_router(external_router, prefix=f"{config.path_prefix}")
 
 # Add middleware.
 app.add_middleware(XForwardedMiddleware)
+
+# Configure exception handlers.
+app.exception_handler(MusterError)(muster_error_handler)
 
 # Configure Slack alerts.
 if config.slack_webhook:
