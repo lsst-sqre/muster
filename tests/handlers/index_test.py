@@ -13,6 +13,10 @@ async def test_get_index(client: AsyncClient) -> None:
     assert response.status_code == 200
     data = response.json()
     assert data["anonymous_url"] == "https://example.com/muster/anonymous"
+    assert data["auth_required_url"] == "https://example.com/muster/auth/fail"
+    assert data["auth_redirect_url"] == (
+        "https://example.com/muster/auth/redirect"
+    )
     metadata = data["metadata"]
     assert metadata["name"] == config.name
     assert isinstance(metadata["version"], str)
