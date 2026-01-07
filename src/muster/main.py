@@ -29,11 +29,7 @@ __all__ = ["app"]
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Set up and tear down the application."""
-    # Any code here will be run when the application starts up.
-
     yield
-
-    # Any code here will be run when the application shuts down.
     await http_client_dependency.aclose()
 
 

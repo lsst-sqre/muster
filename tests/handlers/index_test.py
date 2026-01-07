@@ -17,6 +17,7 @@ async def test_get_index(client: AsyncClient) -> None:
     assert data["auth_redirect_url"] == (
         "https://example.com/muster/auth/redirect"
     )
+    assert data["delegated_url"] == "https://example.com/muster/delegated"
     metadata = data["metadata"]
     assert metadata["name"] == config.name
     assert isinstance(metadata["version"], str)
