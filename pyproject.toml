@@ -22,6 +22,7 @@ dependencies = [
     "fastapi>=0.100",
     "pydantic>2",
     "pydantic-settings>=2",
+    "rubin-gafaelfawr>=15",
     "safir>=5",
     "uvicorn[standard]>=0.34",
 ]
@@ -45,6 +46,7 @@ dev = [
     "pytest-cov",
     "pytest-sugar",
     "respx",
+    "rubin-repertoire",
     "scriv[toml]",
 ]
 lint = [
@@ -148,3 +150,6 @@ new_fragment_template = "file:changelog.d/_template.md.jinja"
 skip_fragments = "_template.md.jinja"
 
 [tool.setuptools_scm]
+
+[tool.uv.sources]
+rubin-gafaelfawr = { git = "https://github.com/lsst-sqre/gafaelfawr", subdirectory = "client" }

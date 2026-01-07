@@ -94,6 +94,12 @@ class MusterError(Exception):
         return result
 
 
+class GafaelfawrDataError(MusterError):
+    """Some Gafaelfawr information did not match."""
+
+    error = "gafaelfawr_data"
+
+
 class UnexpectedCookieError(MusterError):
     """Muster saw a cookie that should not have been sent.
 
