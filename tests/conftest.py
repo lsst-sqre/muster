@@ -9,6 +9,9 @@ import respx
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
+
+pytest.register_assert_rewrite("rubin.gafaelfawr", "rubin.repertoire")
+
 from rubin.gafaelfawr import MockGafaelfawr, register_mock_gafaelfawr
 from rubin.repertoire import Discovery, register_mock_discovery
 
