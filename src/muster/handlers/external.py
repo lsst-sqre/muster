@@ -56,7 +56,7 @@ async def get_anonymous(*, request: Request) -> MusterResult:
 )
 async def get_auth(
     *,
-    mode: Literal["fail", "redirect"],
+    mode: Literal["fail", "redirect", "quota"],
     user: Annotated[str, Depends(auth_dependency)],
     x_auth_request_email: Annotated[str | None, Header()] = None,
 ) -> AuthInfo:
