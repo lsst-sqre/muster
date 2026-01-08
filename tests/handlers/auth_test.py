@@ -6,7 +6,11 @@ from httpx import AsyncClient
 
 @pytest.mark.asyncio
 async def test_get_auth(client: AsyncClient) -> None:
-    for url in ("/muster/auth/fail", "/muster/auth/redirect"):
+    for url in (
+        "/muster/auth/fail",
+        "/muster/auth/redirect",
+        "/muster/auth/quota",
+    ):
         r = await client.get(url)
         assert r.status_code == 422
 
