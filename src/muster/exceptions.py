@@ -7,6 +7,9 @@ from fastapi.responses import JSONResponse
 from safir.models import ErrorLocation
 
 __all__ = [
+    "GafaelfawrDataError",
+    "IncorrectHeaderError",
+    "MissingHeaderError",
     "MusterError",
     "UnexpectedCookieError",
     "UnexpectedHeaderError",
@@ -100,6 +103,40 @@ class GafaelfawrDataError(MusterError):
     error = "gafaelfawr_data"
 
 
+class IncorrectHeaderError(MusterError):
+    """The value of a header as seen by Muster was incorrect.
+
+    Parameters
+    ----------
+    header_name
+        Name of the header.
+    value
+        Value of the header.
+    """
+
+    error = "incorrect_header"
+
+    def __init__(self, header_name: str, value: str) -> None:
+        message = f"Header {header_name} has an incorrect value: {value}"
+        super().__init__(message, ErrorLocation.header, [header_name])
+
+
+class MissingHeaderError(MusterError):
+    """Muster did not see a header that should have been present.
+
+    Parameters
+    ----------
+    header_name
+        Name of the header.
+    """
+
+    error = "missing_header"
+
+    def __init__(self, header_name: str) -> None:
+        message = f"Header {header_name} not present but should be set"
+        super().__init__(message, ErrorLocation.header, [header_name])
+
+
 class UnexpectedCookieError(MusterError):
     """Muster saw a cookie that should not have been sent.
 
@@ -122,7 +159,7 @@ class UnexpectedHeaderError(MusterError):
     Parameters
     ----------
     header_name
-        Name of the header
+        Name of the header.
     """
 
     error = "unexpected_header"

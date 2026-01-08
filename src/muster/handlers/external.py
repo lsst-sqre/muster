@@ -11,6 +11,8 @@ from safir.slack.webhook import SlackRouteErrorHandler
 from ..config import config
 from ..exceptions import (
     GafaelfawrDataError,
+    IncorrectHeaderError,
+    MissingHeaderError,
     UnexpectedCookieError,
     UnexpectedHeaderError,
 )
@@ -24,7 +26,7 @@ external_router = APIRouter(route_class=SlackRouteErrorHandler)
 
 @external_router.get(
     "/",
-    response_model_exclude_none=True,
+    response_model_exclude_defaults=True,
     summary="Application metadata",
 )
 async def get_index(request: Request) -> Index:
@@ -36,7 +38,11 @@ async def get_index(request: Request) -> Index:
         anonymous_url=str(request.url_for("get_anonymous")),
         auth_required_url=str(request.url_for("get_auth", mode="fail")),
         auth_redirect_url=str(request.url_for("get_auth", mode="redirect")),
-        delegated_url=str(request.url_for("get_delegated")),
+        auth_quota_url=str(request.url_for("get_auth", mode="quota")),
+        delegated_url=str(request.url_for("get_delegated", mode="header")),
+        authorization_url=str(
+            request.url_for("get_delegated", mode="authorization")
+        ),
     )
 
 
@@ -51,7 +57,7 @@ async def get_anonymous(*, request: Request) -> MusterResult:
 
 @external_router.get(
     "/auth/{mode}",
-    response_model_exclude_none=True,
+    response_model_exclude_defaults=True,
     summary="Test authenticated routes",
 )
 async def get_auth(
@@ -64,14 +70,16 @@ async def get_auth(
 
 
 @external_router.get(
-    "/delegated",
-    response_model_exclude_none=True,
+    "/delegated/{mode}",
+    response_model_exclude_defaults=True,
     summary="Test delegated token",
 )
 async def get_delegated(
     *,
+    mode: Literal["header", "authorization"],
     gafaelfawr: Annotated[GafaelfawrClient, Depends(gafaelfawr_dependency)],
     user: Annotated[str, Depends(auth_dependency)],
+    authorization: Annotated[str | None, Header()] = None,
     x_auth_request_token: Annotated[str, Header()],
     x_auth_request_email: Annotated[str | None, Header()] = None,
 ) -> UserInfo:
@@ -88,4 +96,9 @@ async def get_delegated(
             f" endpoint, {x_auth_request_email} from request headers"
         )
         raise GafaelfawrDataError(msg)
+    if mode == "authorization":
+        if not authorization:
+            raise MissingHeaderError("Authorization")
+        if authorization != f"Bearer {x_auth_request_token}":
+            raise IncorrectHeaderError("Authorization", authorization)
     return UserInfo.from_gafaelfawr(user_info)

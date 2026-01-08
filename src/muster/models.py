@@ -20,7 +20,11 @@ class Index(BaseModel):
 
     auth_redirect_url: Annotated[str, Field(title="Auth or redirect test")]
 
+    auth_quota_url: Annotated[str, Field(title="Quota test")]
+
     delegated_url: Annotated[str, Field(title="Delegated token test")]
+
+    authorization_url: Annotated[str, Field(title="Authorization header test")]
 
 
 class MusterResult(BaseModel):

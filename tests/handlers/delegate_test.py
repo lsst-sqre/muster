@@ -25,7 +25,7 @@ async def test_get_delegated(
     mock_gafaelfawr.set_user_info("user", user_info)
 
     r = await client.get(
-        "/muster/delegated",
+        "/muster/delegated/header",
         headers={
             "X-Auth-Request-User": "user",
             "X-Auth-Request-Email": "someuser@example.com",
@@ -43,7 +43,7 @@ async def test_get_delegated(
     }
 
     r = await client.get(
-        "/muster/delegated",
+        "/muster/delegated/header",
         headers={
             "X-Auth-Request-User": "otheruser",
             "X-Auth-Request-Email": "someuser@example.com",
@@ -64,7 +64,7 @@ async def test_get_delegated(
     }
 
     r = await client.get(
-        "/muster/delegated",
+        "/muster/delegated/header",
         headers={
             "X-Auth-Request-User": "user",
             "X-Auth-Request-Email": "othermail@example.com",
@@ -81,6 +81,65 @@ async def test_get_delegated(
                     " headers"
                 ),
                 "type": "gafaelfawr_data",
+            }
+        ]
+    }
+
+
+@pytest.mark.asyncio
+async def test_authorization(
+    client: AsyncClient, mock_gafaelfawr: MockGafaelfawr
+) -> None:
+    token = mock_gafaelfawr.create_token("user")
+    mock_gafaelfawr.set_user_info("user", GafaelfawrUserInfo(username="user"))
+
+    r = await client.get(
+        "/muster/delegated/authorization",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-Auth-Request-User": "user",
+            "X-Auth-Request-Token": token,
+        },
+    )
+    assert r.status_code == 200
+    assert r.json() == {"username": "user"}
+
+    r = await client.get(
+        "/muster/delegated/authorization",
+        headers={
+            "X-Auth-Request-User": "user",
+            "X-Auth-Request-Token": token,
+        },
+    )
+    assert r.status_code == 500
+    assert r.json() == {
+        "detail": [
+            {
+                "loc": ["header", "Authorization"],
+                "msg": "Header Authorization not present but should be set",
+                "type": "missing_header",
+            }
+        ]
+    }
+
+    r = await client.get(
+        "/muster/delegated/authorization",
+        headers={
+            "Authorization": "Bearer some-token",
+            "X-Auth-Request-User": "user",
+            "X-Auth-Request-Token": token,
+        },
+    )
+    assert r.status_code == 500
+    assert r.json() == {
+        "detail": [
+            {
+                "loc": ["header", "Authorization"],
+                "msg": (
+                    "Header Authorization has an incorrect value: Bearer"
+                    " some-token"
+                ),
+                "type": "incorrect_header",
             }
         ]
     }
