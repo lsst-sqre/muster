@@ -132,6 +132,11 @@ python_files = ["tests/*.py", "tests/*/*.py"]
 [tool.ruff]
 extend = "ruff-shared.toml"
 
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/conftest.py" = [
+    "E402",   # pytest.register_assert_rewrite precedes relevant imports
+]
+
 [tool.ruff.lint.isort]
 known-first-party = ["muster", "tests"]
 split-on-trailing-comma = false
