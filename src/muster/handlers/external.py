@@ -64,8 +64,11 @@ async def get_auth(
     *,
     mode: Literal["fail", "redirect", "quota"],
     user: Annotated[str, Depends(auth_dependency)],
+    authorization: Annotated[str | None, Header()] = None,
     x_auth_request_email: Annotated[str | None, Header()] = None,
 ) -> AuthInfo:
+    if authorization:
+        raise UnexpectedHeaderError("Authorization")
     return AuthInfo(username=user, email=x_auth_request_email)
 
 
@@ -96,9 +99,16 @@ async def get_delegated(
             f" endpoint, {x_auth_request_email} from request headers"
         )
         raise GafaelfawrDataError(msg)
+
+    # Authorization should contain the token if and only if the mode is
+    # authorization.
     if mode == "authorization":
         if not authorization:
             raise MissingHeaderError("Authorization")
         if authorization != f"Bearer {x_auth_request_token}":
             raise IncorrectHeaderError("Authorization", authorization)
+    elif authorization:
+        raise UnexpectedHeaderError("Authorization")
+
+    # Return the user iformation from Gafaelfawr.
     return UserInfo.from_gafaelfawr(user_info)

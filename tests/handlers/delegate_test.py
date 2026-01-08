@@ -85,6 +85,26 @@ async def test_get_delegated(
         ]
     }
 
+    r = await client.get(
+        "/muster/delegated/header",
+        headers={
+            "Authorization": "some-token",
+            "X-Auth-Request-User": "user",
+            "X-Auth-Request-Email": "someuser@example.com",
+            "X-Auth-Request-Token": token,
+        },
+    )
+    assert r.status_code == 500
+    assert r.json() == {
+        "detail": [
+            {
+                "loc": ["header", "Authorization"],
+                "msg": "Header Authorization set but should not be present",
+                "type": "unexpected_header",
+            }
+        ]
+    }
+
 
 @pytest.mark.asyncio
 async def test_authorization(
