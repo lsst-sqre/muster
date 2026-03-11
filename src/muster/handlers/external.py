@@ -36,6 +36,8 @@ async def get_index(request: Request) -> Index:
     return Index(
         metadata=metadata,
         anonymous_url=str(request.url_for("get_anonymous")),
+        auth_cached_url=str(request.url_for("get_auth", mode="cached")),
+        auth_vinyl_url=str(request.url_for("get_auth", mode="vinyl")),
         auth_required_url=str(request.url_for("get_auth", mode="fail")),
         auth_redirect_url=str(request.url_for("get_auth", mode="redirect")),
         auth_quota_url=str(request.url_for("get_auth", mode="quota")),
@@ -62,7 +64,7 @@ async def get_anonymous(*, request: Request) -> MusterResult:
 )
 async def get_auth(
     *,
-    mode: Literal["fail", "redirect", "quota"],
+    mode: Literal["fail", "redirect", "quota", "cached", "vinyl"],
     user: Annotated[str, Depends(auth_dependency)],
     authorization: Annotated[str | None, Header()] = None,
     x_auth_request_email: Annotated[str | None, Header()] = None,

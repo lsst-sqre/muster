@@ -16,6 +16,10 @@ class Index(BaseModel):
 
     anonymous_url: Annotated[str, Field(title="Anonymous route test")]
 
+    auth_cached_url: Annotated[str, Field(title="Cached auth test")]
+
+    auth_vinyl_url: Annotated[str, Field(title="Vinyl cached auth test")]
+
     auth_required_url: Annotated[str, Field(title="Auth required test")]
 
     auth_redirect_url: Annotated[str, Field(title="Auth or redirect test")]
